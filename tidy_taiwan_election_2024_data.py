@@ -7,7 +7,7 @@ warnings.simplefilter("ignore")
 class TidyTaiwanElection2024Data:
     def __init__(self):
         self.county_names = ['連江縣', '屏東縣', '臺南市', '雲林縣', '基隆市', '新北市', '新竹市', '宜蘭縣', '嘉義縣', '臺東縣', '臺北市', '彰化縣', '嘉義市', '新竹縣', '金門縣', '苗栗縣', '南投縣', '臺中市', '花蓮縣', '高雄市', '澎湖縣', '桃園市']
-        self.region_column_names = ["town", "village", "office"]
+        self.region_column_names = ["town", "village", "polling_place"]
         self.office_column_names = ["effective_votes", "wasted_votes", "voted", "issued_not_voted", "issued_votes", "remained_votes", "number_of_voters", "vote_rate"]
     def tidy_president_dataframes(self, df: pd.core.frame.DataFrame, county_name: str) -> tuple:
         number_of_columns = df.shape[1]
@@ -17,7 +17,7 @@ class TidyTaiwanElection2024Data:
         df["town"] = df["town"].str.replace("\u3000", "")
         df["town"] = df["town"].fillna(method="ffill")
         df = df.dropna()
-        df["office"] = df["office"].astype(int)
+        df["polling_place"] = df["polling_place"].astype(int)
         region_data = df.iloc[:, [0, 1, 2]]
         office_data = df.iloc[:, -8::]
         candidate_data = df.loc[:, candidates_info]
@@ -33,7 +33,7 @@ class TidyTaiwanElection2024Data:
         candidate_df = pd.concat((region_data, candidate_data), axis=1)
         candidate_df.insert(0, "county", county_names)
         melted_candidate_df = pd.melt(candidate_df,
-                                      id_vars=["county", "town", "village", "office"],
+                                      id_vars=["county", "town", "village", "polling_place"],
                                       var_name="number_candidate",
                                       value_name="votes")
         split_number_candidate = melted_candidate_df["number_candidate"].str.split("\n")
@@ -61,7 +61,7 @@ class TidyTaiwanElection2024Data:
         df["town"] = df["town"].str.replace("\u3000", "")
         df["town"] = df["town"].fillna(method="ffill")
         df = df.dropna()
-        df["office"] = df["office"].astype(int)
+        df["polling_place"] = df["polling_place"].astype(int)
         region_data = df.iloc[:, [0, 1, 2]]
         office_data = df.iloc[:, -8::]
         candidate_data = df.loc[:, candidates_info]
@@ -81,7 +81,7 @@ class TidyTaiwanElection2024Data:
         candidate_df.insert(0, "region", region_names)
         candidate_df.insert(0, "county", county_names)
         melted_candidate_df = pd.melt(candidate_df,
-                                      id_vars=["county", "region", "town", "village", "office"],
+                                      id_vars=["county", "region", "town", "village", "polling_place"],
                                       var_name="number_candidate",
                                       value_name="votes")
         split_number_candidate = melted_candidate_df["number_candidate"].str.split("\n")
@@ -104,7 +104,7 @@ class TidyTaiwanElection2024Data:
         df["town"] = df["town"].str.replace("\u3000", "")
         df["town"] = df["town"].fillna(method="ffill")
         df = df.dropna()
-        df["office"] = df["office"].astype(int)
+        df["polling_place"] = df["polling_place"].astype(int)
         region_data = df.iloc[:, [0, 1, 2]]
         office_data = df.iloc[:, -8::]
         candidate_data = df.loc[:, candidates_info]
@@ -120,7 +120,7 @@ class TidyTaiwanElection2024Data:
         candidate_df = pd.concat((region_data, candidate_data), axis=1)
         candidate_df.insert(0, "county", county_names)
         melted_candidate_df = pd.melt(candidate_df,
-                                      id_vars=["county", "town", "village", "office"],
+                                      id_vars=["county", "town", "village", "polling_place"],
                                       var_name="number_party",
                                       value_name="votes")
         split_number_party = melted_candidate_df["number_party"].str.split("\n")
@@ -200,7 +200,7 @@ class TidyTaiwanElection2024Data:
             "president": president_df,
             "legislator": legislator_df,
             "party_legislator": party_legislator_df,
-            "office": concatenated_office_df
+            "polling_place": concatenated_office_df
         }
         self._tidy_dataframes = tidy_dataframes
         return tidy_dataframes
@@ -208,4 +208,4 @@ class TidyTaiwanElection2024Data:
         self._tidy_dataframes["president"].to_csv("president.csv", index=False)
         self._tidy_dataframes["legislator"].to_csv("legislator.csv", index=False)
         self._tidy_dataframes["party_legislator"].to_csv("party_legislator.csv", index=False)
-        self._tidy_dataframes["office"].to_csv("office.csv", index=False)
+        self._tidy_dataframes["polling_place"].to_csv("polling_place.csv", index=False)
